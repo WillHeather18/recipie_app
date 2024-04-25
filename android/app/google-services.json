@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "596231402827",
+    "project_id": "recipie-app-8c9eb",
+    "storage_bucket": "recipie-app-8c9eb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:596231402827:android:ea0360009ac6fa1db3e4ce",
+        "android_client_info": {
+          "package_name": "com.example.recipie_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAuWnQucJQCdXPzUy0niaUoNjxzOhUSKrs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
