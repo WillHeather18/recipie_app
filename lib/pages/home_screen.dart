@@ -44,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Align(
             alignment: FractionalOffset.bottomCenter,
             child: AnimatedContainer(
-              duration: Duration(milliseconds: 250),
+              duration: const Duration(milliseconds: 250),
               height:
                   _clickedCentreFAB ? MediaQuery.of(context).size.height : 10.0,
               width:
@@ -64,7 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
             _clickedCentreFAB = !_clickedCentreFAB;
           });
         },
-        shape: CircleBorder(),
+        shape: const CircleBorder(),
         tooltip: "Centre FAB",
         elevation: 4.0,
         child: Container(
@@ -75,7 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: BottomAppBar(
         color: Colors.white,
         elevation: 10,
-        shape: CircularNotchedRectangle(),
+        shape: const CircularNotchedRectangle(),
         child: Container(
           margin: const EdgeInsets.only(left: 12.0, right: 12.0),
           child: Row(
