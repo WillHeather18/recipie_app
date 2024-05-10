@@ -41,50 +41,62 @@ class _RecipeCardState extends State<RecipeCard> {
               ),
             ),
             GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          RecipeDetailsPage(recipeData: widget.recipeData)),
-                );
-              },
-              child: Stack(
-                children: [
-                  AspectRatio(
-                    aspectRatio: 1 / 1,
-                    child: Container(
-                      decoration: const BoxDecoration(),
-                      child: Hero(
-                        tag: widget.recipeData['imageURL'],
-                        child: Image.network(
-                          widget.recipeData['imageURL'],
-                          fit: BoxFit
-                              .cover, // This line makes the image fill the container
-                          width: double
-                              .infinity, // This line makes the image width match the container width
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            RecipeDetailsPage(recipeData: widget.recipeData)),
+                  );
+                },
+                child: Stack(
+                  children: [
+                    AspectRatio(
+                      aspectRatio: 1 / 1,
+                      child: Container(
+                        decoration: const BoxDecoration(),
+                        child: Hero(
+                          tag: widget.recipeData['imageURL'],
+                          child: Image.network(
+                            widget.recipeData['imageURL'],
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  Align(
-                    alignment: Alignment.topLeft,
-                    child: Container(
-                      decoration: const BoxDecoration(
-                          color: Colors.white,
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: Container(
+                        height: 20,
+                        decoration: const BoxDecoration(
+                          color: Color(0x0000cd77),
                           borderRadius: BorderRadius.only(
-                              bottomRight: Radius.circular(10))),
-                      child: Text(
-                        widget.recipeData['title'],
-                        style: const TextStyle(
-                          fontSize: 20,
+                            topRight: Radius.circular(10),
+                          ),
+                        ),
+                        child: ListView.builder(
+                          itemCount: widget.recipeData['tags'].length,
+                          itemBuilder: (context, index) {
+                            return Container(
+                              height: 20,
+                              width: 60,
+                              decoration: const BoxDecoration(
+                                color: Color.fromARGB(255, 12, 179, 109),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10)),
+                              ),
+                              child: Text(
+                                widget.recipeData['tags'][index],
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                            );
+                          },
                         ),
                       ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+                    )
+                  ],
+                )),
             Container(
               height: 50,
               decoration: const BoxDecoration(),
@@ -95,11 +107,11 @@ class _RecipeCardState extends State<RecipeCard> {
                     onPressed: () {},
                   ),
                   IconButton(
-                    icon: const Icon(Icons.comment),
+                    icon: const Icon(Icons.comment_outlined),
                     onPressed: () {},
                   ),
                   IconButton(
-                    icon: const Icon(Icons.share),
+                    icon: const Icon(Icons.share_outlined),
                     onPressed: () {},
                   ),
                 ],
