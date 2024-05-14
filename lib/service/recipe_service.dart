@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:recipie_app/service/user_service.dart';
+import '../providers/user_provider.dart';
 
 class RecipeService {
   final CollectionReference recipes =
@@ -15,8 +17,25 @@ class RecipeService {
   }
 
   // Get all recipes
-  Stream<QuerySnapshot> getRecipes() {
-    return recipes.snapshots();
+  Future<Stream<QuerySnapshot>> getRecipes(String username,
+      {bool followingPage = false}) async {
+    if (followingPage) {
+      print("Getting following recipes");
+
+      // Get the current user's following list
+      List<String> followingList =
+          await UserService(userProvider: UserProvider())
+              .getFollowingList(username);
+
+      print("Following list: $followingList");
+
+      // Use the 'whereIn' operator to get recipes from the users that the current user is following
+      return recipes
+          .where('author.username', whereIn: followingList)
+          .snapshots();
+    } else {
+      return recipes.snapshots();
+    }
   }
 
   // Update an existing recipe

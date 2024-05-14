@@ -21,19 +21,12 @@ class ProfilePage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if (profilePictureUrl != null)
-              CircleAvatar(
-                radius: 50,
-                backgroundImage: NetworkImage(profilePictureUrl),
-              )
-            else
-              CircleAvatar(
-                radius: 50,
-                child: Icon(Icons.account_circle_outlined,
-                      size: 100, color: Colors.grey[700]),
-              ),
-            Text(userProvider.username,
-                style: const TextStyle(fontSize: 20)),
+            CircleAvatar(
+              radius: 50,
+              child: Icon(Icons.account_circle_outlined,
+                  size: 100, color: Colors.grey[700]),
+            ),
+            Text(userProvider.username, style: const TextStyle(fontSize: 20)),
             Text("Email: ${userProvider.email}",
                 style: const TextStyle(fontSize: 20)),
             const SizedBox(height: 20),

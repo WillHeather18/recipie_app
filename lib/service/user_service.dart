@@ -95,6 +95,15 @@ class UserService {
     await userDoc.reference.update({'following': following});
   }
 
+  Future<List<String>> getFollowingList(String username) async {
+    QuerySnapshot userQuery =
+        await users.where('username', isEqualTo: username).get();
+    DocumentSnapshot userDoc = userQuery.docs[0];
+    List<dynamic> following =
+        (userDoc.data() as Map<String, dynamic>)['following'] ?? [];
+    return following.cast<String>();
+  }
+
   Future<bool> checkIsLiked(String recipeId, String username) async {
     QuerySnapshot userQuery =
         await users.where('username', isEqualTo: username).get();
