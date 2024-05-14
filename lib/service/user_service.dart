@@ -24,6 +24,7 @@ class UserService {
       await users.doc(result.user!.uid).set({
         'username': username,
         'email': email,
+        'likes': [],
       });
       userProvider.setUser(email, username);
       return result;
@@ -38,10 +39,18 @@ class UserService {
       UserCredential result = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
       DocumentSnapshot docSnapshot = await users.doc(result.user!.uid).get();
-      Map<String, dynamic> userDetails =
-          docSnapshot.data() as Map<String, dynamic>;
-      userProvider.setUser(
-          userDetails['email'] as String, userDetails['username'] as String);
+      Map<String, dynamic>? data = docSnapshot.data() as Map<String, dynamic>?;
+      if (data != null) {
+        String? userEmail = data['email'] as String?;
+        String? username = data['username'] as String?;
+        if (userEmail != null && username != null) {
+          userProvider.setUser(userEmail, username);
+        } else {
+          throw Exception('Failed to retrieve user details');
+        }
+      } else {
+        throw Exception('Failed to retrieve user details');
+      }
       return result;
     } on FirebaseAuthException catch (e) {
       throw Exception('Failed to log in: ${e.message}');
@@ -61,5 +70,13 @@ class UserService {
   // Log out a user
   Future<void> signOut() async {
     await _auth.signOut();
+  }
+
+  Future<bool> checkIsLiked(String recipeId, String username) async {
+    QuerySnapshot userQuery =
+        await users.where('username', isEqualTo: username).get();
+    var likes =
+        (userQuery.docs[0].data() as Map<String, dynamic>)['likes'] ?? [];
+    return likes.contains(recipeId);
   }
 }

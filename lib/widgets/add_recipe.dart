@@ -650,6 +650,7 @@ class _AddRecipeState extends State<AddRecipe> {
         "username": userProvider.username
       },
       "datePosted": DateTime.now().toIso8601String(),
+      "interactions": {"likes": 0, "comments": [], "shares": 0},
     };
 
     await recipes.add(document).then((value) {
