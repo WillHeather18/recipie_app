@@ -4,6 +4,7 @@ import '../pages/recipe_page.dart';
 import '../service/recipe_service.dart';
 import '../service/user_service.dart';
 import '../providers/user_provider.dart';
+import 'package:provider/provider.dart';
 
 class RecipeCard extends StatefulWidget {
   final Map<String, dynamic> recipeData;
@@ -29,7 +30,8 @@ class _RecipeCardState extends State<RecipeCard> {
 
   @override
   Widget build(BuildContext context) {
-    print("Username: ${widget.username}");
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    print("Url is: ${userProvider.profilePictureUrl}");
 
     var isLiked = userService.checkIsLiked(
         widget.recipeData['recipeId'], widget.username);
@@ -53,8 +55,10 @@ class _RecipeCardState extends State<RecipeCard> {
               ),
               child: Row(
                 children: [
-                  Icon(Icons.account_circle_outlined,
-                      size: 50, color: Colors.grey[700]),
+                  CircleAvatar(
+                    backgroundImage:
+                        NetworkImage(userProvider.profilePictureUrl),
+                  ),
                   Padding(
                     padding: const EdgeInsets.only(left: 8.0),
                     child: Text(widget.recipeData['author']['username'],

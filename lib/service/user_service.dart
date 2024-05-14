@@ -26,8 +26,9 @@ class UserService {
         'email': email,
         'likes': [],
         'following': [],
+        'profilePictureUrl':
+            'https://firebasestorage.googleapis.com/v0/b/recipie-app-8c9eb.appspot.com/o/profileImages%2Fprofile-default-icon.png?alt=media&token=d362d8df-0dd4-45a2-9a00-f3d812e37a76'
       });
-      userProvider.setUser(email, username);
       return result;
     } on FirebaseAuthException catch (e) {
       throw Exception('Failed to sign up: ${e.message}');
@@ -44,8 +45,11 @@ class UserService {
       if (data != null) {
         String? userEmail = data['email'] as String?;
         String? username = data['username'] as String?;
-        if (userEmail != null && username != null) {
-          userProvider.setUser(userEmail, username);
+        String? profilePictureUrl = data['profilePictureUrl'] as String?;
+        if (userEmail != null &&
+            username != null &&
+            profilePictureUrl != null) {
+          userProvider.setUser(userEmail, username, profilePictureUrl);
         } else {
           throw Exception('Failed to retrieve user details');
         }
