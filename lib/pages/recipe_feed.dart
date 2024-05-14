@@ -20,15 +20,12 @@ class FeedPage extends StatelessWidget {
           } else if (snapshot.hasError) {
             return Center(child: Text("Error fetching data"));
           } else if (snapshot.hasData) {
-            return ListView.separated(
+            return ListView.builder(
               itemCount: snapshot.data!.docs.length,
               itemBuilder: (context, index) {
                 Map<String, dynamic> recipeData =
                     snapshot.data!.docs[index].data() as Map<String, dynamic>;
                 return RecipeCard(recipeData: recipeData, username: username);
-              },
-              separatorBuilder: (context, index) {
-                return Divider(); // You can customize this divider as needed
               },
             );
           } else {

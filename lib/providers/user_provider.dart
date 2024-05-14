@@ -5,13 +5,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 class UserProvider with ChangeNotifier {
   String _email = '';
   String _username = '';
+  String _profilePictureUrl = '';
 
   String get email => _email;
   String get username => _username;
+  String get profilePictureUrl => _profilePictureUrl;
 
-  void setUser(String email, String username) {
+  void setUser(String email, String username, String profilePictureUrl) {
     _email = email;
     _username = username;
+    _profilePictureUrl = profilePictureUrl;
     notifyListeners();
   }
 
@@ -25,6 +28,7 @@ class UserProvider with ChangeNotifier {
       var data = userDoc.data() as Map<String, dynamic>;
       _username = data['username'];
       _email = data['email'];
+      _profilePictureUrl = data['profilePictureUrl'];
       notifyListeners();
     }
   }
