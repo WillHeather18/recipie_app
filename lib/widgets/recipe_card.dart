@@ -4,13 +4,13 @@ import '../pages/recipe_page.dart';
 import '../service/recipe_service.dart';
 import '../service/user_service.dart';
 import '../providers/user_provider.dart';
-import 'package:provider/provider.dart';
 
 class RecipeCard extends StatefulWidget {
   final Map<String, dynamic> recipeData;
   final String username;
 
-  RecipeCard({required this.recipeData, required this.username});
+  const RecipeCard(
+      {super.key, required this.recipeData, required this.username});
 
   @override
   State<RecipeCard> createState() => _RecipeCardState();
@@ -22,6 +22,8 @@ class _RecipeCardState extends State<RecipeCard> {
     userProvider: UserProvider(),
   );
   bool isLiked = false;
+  late bool isFollowing;
+  Future<bool>? isFollowingFuture;
 
   bool showMore = false;
 
@@ -31,6 +33,9 @@ class _RecipeCardState extends State<RecipeCard> {
 
     var isLiked = userService.checkIsLiked(
         widget.recipeData['recipeId'], widget.username);
+
+    var isFollowing = userService.checkIsFollowing(
+        widget.username, widget.recipeData['author']['username']);
 
     return Container(
       decoration: const BoxDecoration(),
@@ -61,20 +66,44 @@ class _RecipeCardState extends State<RecipeCard> {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(right: 8.0),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        // Handle follow button press
+                    child: FutureBuilder<bool>(
+                      future: isFollowing,
+                      builder:
+                          (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return CircularProgressIndicator(); // or some other widget while waiting
+                        } else if (snapshot.hasError) {
+                          return Text('Error: ${snapshot.error}');
+                        } else {
+                          return ElevatedButton(
+                            onPressed: () async {
+                              await userService.followUser(widget.username,
+                                  widget.recipeData['author']['username']);
+                              bool following =
+                                  await userService.checkIsFollowing(
+                                      widget.username,
+                                      widget.recipeData['author']['username']);
+
+                              setState(() {
+                                isFollowing = Future.value(following);
+                              });
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: snapshot.data ?? false
+                                  ? Colors.green
+                                  : Colors.blue, // background color
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(24.0),
+                              ),
+                            ),
+                            child: Text(
+                              snapshot.data ?? false ? 'Following' : 'Follow',
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                          );
+                        }
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue, // background color
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(24.0),
-                        ),
-                      ),
-                      child: const Text(
-                        'Follow',
-                        style: const TextStyle(color: Colors.white),
-                      ),
                     ),
                   ),
                 ],

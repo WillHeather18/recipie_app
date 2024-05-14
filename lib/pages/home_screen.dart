@@ -20,16 +20,20 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
   void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-      _clickedCentreFAB = false;
-    });
+    if (mounted) {
+      setState(() {
+        _selectedIndex = index;
+        _clickedCentreFAB = false;
+      });
+    }
   }
 
   void _onCentreFABTapped() {
-    setState(() {
-      _clickedCentreFAB = !_clickedCentreFAB;
-    });
+    if (mounted) {
+      setState(() {
+        _clickedCentreFAB = !_clickedCentreFAB;
+      });
+    }
   }
 
   @override
@@ -60,9 +64,11 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          setState(() {
-            _clickedCentreFAB = !_clickedCentreFAB;
-          });
+          if (mounted) {
+            setState(() {
+              _clickedCentreFAB = !_clickedCentreFAB;
+            });
+          }
         },
         shape: const CircleBorder(),
         tooltip: "Centre FAB",

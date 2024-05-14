@@ -25,6 +25,7 @@ class UserService {
         'username': username,
         'email': email,
         'likes': [],
+        'following': [],
       });
       userProvider.setUser(email, username);
       return result;
@@ -72,11 +73,39 @@ class UserService {
     await _auth.signOut();
   }
 
+  Future<void> followUser(String username, String otherUsername) async {
+    QuerySnapshot userQuery =
+        await users.where('username', isEqualTo: username).get();
+    DocumentSnapshot userDoc = userQuery.docs[0];
+    List<dynamic> following =
+        (userDoc.data() as Map<String, dynamic>)['following'] ?? [];
+
+    if (following.contains(otherUsername)) {
+      // If already following, unfollow
+      following.remove(otherUsername);
+    } else {
+      // If not following, follow
+      following.add(otherUsername);
+    }
+
+    await userDoc.reference.update({'following': following});
+  }
+
   Future<bool> checkIsLiked(String recipeId, String username) async {
     QuerySnapshot userQuery =
         await users.where('username', isEqualTo: username).get();
     var likes =
         (userQuery.docs[0].data() as Map<String, dynamic>)['likes'] ?? [];
     return likes.contains(recipeId);
+  }
+
+  Future<bool> checkIsFollowing(String username, String otherUsername) async {
+    QuerySnapshot userQuery =
+        await users.where('username', isEqualTo: username).get();
+    var following =
+        (userQuery.docs[0].data() as Map<String, dynamic>)['following'] ?? [];
+    bool isFollowing = following.contains(otherUsername);
+    print('$username is ${isFollowing ? "" : "not "}following $otherUsername');
+    return isFollowing;
   }
 }
