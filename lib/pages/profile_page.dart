@@ -25,8 +25,14 @@ class ProfilePage extends StatelessWidget {
               CircleAvatar(
                 radius: 50,
                 backgroundImage: NetworkImage(profilePictureUrl),
+              )
+            else
+              CircleAvatar(
+                radius: 50,
+                child: Icon(Icons.account_circle_outlined,
+                      size: 100, color: Colors.grey[700]),
               ),
-            Text("Username: ${userProvider.username}",
+            Text(userProvider.username,
                 style: const TextStyle(fontSize: 20)),
             Text("Email: ${userProvider.email}",
                 style: const TextStyle(fontSize: 20)),
