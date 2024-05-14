@@ -70,7 +70,7 @@ class _LoginScreenState extends State<LoginScreen> {
       UserService _userService = UserService(userProvider: userProvider);
 
       await _userService.login(_emailController.text, _passwordController.text);
-      return true;
+      return true
     } catch (e) {
       showDialog(
         context: context,
