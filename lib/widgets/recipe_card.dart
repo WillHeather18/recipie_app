@@ -10,7 +10,8 @@ class RecipeCard extends StatefulWidget {
   final Map<String, dynamic> recipeData;
   final String username;
 
-  RecipeCard({required this.recipeData, required this.username});
+  const RecipeCard(
+      {super.key, required this.recipeData, required this.username});
 
   @override
   State<RecipeCard> createState() => _RecipeCardState();
@@ -22,15 +23,21 @@ class _RecipeCardState extends State<RecipeCard> {
     userProvider: UserProvider(),
   );
   bool isLiked = false;
+  late bool isFollowing;
+  Future<bool>? isFollowingFuture;
 
   bool showMore = false;
 
   @override
   Widget build(BuildContext context) {
-    print("Username: ${widget.username}");
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    print("Url is: ${userProvider.profilePictureUrl}");
 
     var isLiked = userService.checkIsLiked(
         widget.recipeData['recipeId'], widget.username);
+
+    var isFollowing = userService.checkIsFollowing(
+        widget.username, widget.recipeData['author']['username']);
 
     return Container(
       decoration: const BoxDecoration(),
@@ -48,8 +55,10 @@ class _RecipeCardState extends State<RecipeCard> {
               ),
               child: Row(
                 children: [
-                  Icon(Icons.account_circle_outlined,
-                      size: 50, color: Colors.grey[700]),
+                  CircleAvatar(
+                    backgroundImage:
+                        NetworkImage(userProvider.profilePictureUrl),
+                  ),
                   Padding(
                     padding: const EdgeInsets.only(left: 8.0),
                     child: Text(widget.recipeData['author']['username'],
@@ -61,20 +70,44 @@ class _RecipeCardState extends State<RecipeCard> {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(right: 8.0),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        // Handle follow button press
+                    child: FutureBuilder<bool>(
+                      future: isFollowing,
+                      builder:
+                          (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return CircularProgressIndicator(); // or some other widget while waiting
+                        } else if (snapshot.hasError) {
+                          return Text('Error: ${snapshot.error}');
+                        } else {
+                          return ElevatedButton(
+                            onPressed: () async {
+                              await userService.followUser(widget.username,
+                                  widget.recipeData['author']['username']);
+                              bool following =
+                                  await userService.checkIsFollowing(
+                                      widget.username,
+                                      widget.recipeData['author']['username']);
+
+                              setState(() {
+                                isFollowing = Future.value(following);
+                              });
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: snapshot.data ?? false
+                                  ? Colors.green
+                                  : Colors.blue, // background color
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(24.0),
+                              ),
+                            ),
+                            child: Text(
+                              snapshot.data ?? false ? 'Following' : 'Follow',
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                          );
+                        }
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue, // background color
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(24.0),
-                        ),
-                      ),
-                      child: const Text(
-                        'Follow',
-                        style: const TextStyle(color: Colors.white),
-                      ),
                     ),
                   ),
                 ],

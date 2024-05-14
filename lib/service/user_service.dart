@@ -25,8 +25,10 @@ class UserService {
         'username': username,
         'email': email,
         'likes': [],
+        'following': [],
+        'profilePictureUrl':
+            'https://firebasestorage.googleapis.com/v0/b/recipie-app-8c9eb.appspot.com/o/profileImages%2Fprofile-default-icon.png?alt=media&token=d362d8df-0dd4-45a2-9a00-f3d812e37a76'
       });
-      userProvider.setUser(email, username);
       return result;
     } on FirebaseAuthException catch (e) {
       throw Exception('Failed to sign up: ${e.message}');
@@ -43,8 +45,11 @@ class UserService {
       if (data != null) {
         String? userEmail = data['email'] as String?;
         String? username = data['username'] as String?;
-        if (userEmail != null && username != null) {
-          userProvider.setUser(userEmail, username);
+        String? profilePictureUrl = data['profilePictureUrl'] as String?;
+        if (userEmail != null &&
+            username != null &&
+            profilePictureUrl != null) {
+          userProvider.setUser(userEmail, username, profilePictureUrl);
         } else {
           throw Exception('Failed to retrieve user details');
         }
@@ -72,11 +77,39 @@ class UserService {
     await _auth.signOut();
   }
 
+  Future<void> followUser(String username, String otherUsername) async {
+    QuerySnapshot userQuery =
+        await users.where('username', isEqualTo: username).get();
+    DocumentSnapshot userDoc = userQuery.docs[0];
+    List<dynamic> following =
+        (userDoc.data() as Map<String, dynamic>)['following'] ?? [];
+
+    if (following.contains(otherUsername)) {
+      // If already following, unfollow
+      following.remove(otherUsername);
+    } else {
+      // If not following, follow
+      following.add(otherUsername);
+    }
+
+    await userDoc.reference.update({'following': following});
+  }
+
   Future<bool> checkIsLiked(String recipeId, String username) async {
     QuerySnapshot userQuery =
         await users.where('username', isEqualTo: username).get();
     var likes =
         (userQuery.docs[0].data() as Map<String, dynamic>)['likes'] ?? [];
     return likes.contains(recipeId);
+  }
+
+  Future<bool> checkIsFollowing(String username, String otherUsername) async {
+    QuerySnapshot userQuery =
+        await users.where('username', isEqualTo: username).get();
+    var following =
+        (userQuery.docs[0].data() as Map<String, dynamic>)['following'] ?? [];
+    bool isFollowing = following.contains(otherUsername);
+    print('$username is ${isFollowing ? "" : "not "}following $otherUsername');
+    return isFollowing;
   }
 }
