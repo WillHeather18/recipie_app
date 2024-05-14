@@ -10,6 +10,8 @@ class ProfilePage extends StatelessWidget {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final userService = UserService(userProvider: userProvider);
 
+    var profilePictureUrl;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Profile"),
@@ -19,6 +21,11 @@ class ProfilePage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            if (profilePictureUrl != null)
+              CircleAvatar(
+                radius: 50,
+                backgroundImage: NetworkImage(profilePictureUrl),
+              ),
             Text("Username: ${userProvider.username}",
                 style: const TextStyle(fontSize: 20)),
             Text("Email: ${userProvider.email}",

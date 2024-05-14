@@ -62,12 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
       UserService _userService = UserService(userProvider: userProvider);
 
       await _userService.login(_emailController.text, _passwordController.text);
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          content: Text('Login Successful'),
-        ),
-      );
+
     } catch (e) {
       showDialog(
         context: context,
