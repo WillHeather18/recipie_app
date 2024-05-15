@@ -10,8 +10,10 @@ class ProfilePage extends StatelessWidget {
     final userProvider = Provider.of<UserProvider>(context);
     final userService = UserService(userProvider: userProvider);
 
-    var followers;// = userProvider.followers;
-    var following;// = userService.following;
+    Future<List<String>> followers = userService.getFollowersList(userProvider.username);
+    Future<List<String>> following = userService.getFollowingList(userProvider.username);
+    print('Followers: $followers');
+    print('Following: $following');
     var profilePictureUrl = userProvider.profilePictureUrl;
 
     return Scaffold(
@@ -57,17 +59,31 @@ class ProfilePage extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Column(
-                  children: [
-                    Text("Followers:", style: const TextStyle(fontSize: 20)),
-                    Text("${followers ?? 0}", style: const TextStyle(fontSize: 20)),
-                  ],
+                FutureBuilder<List<String>>(
+                  future: followers, // The Future you want to execute
+                  builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return CircularProgressIndicator(); // Show a loading spinner while waiting
+                    } else if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}'); // Show error if any
+                    } else {
+                      return Text('Followers: ${snapshot.data?.length}'); // Display the number of followers
+                    }
+                  },
                 ),
                 const SizedBox(width: 40),
                 Column(
                   children: [
-                    Text("Following:", style: const TextStyle(fontSize: 20)),
-                    Text("${following ?? 0}", style: const TextStyle(fontSize: 20)),
+                    FutureBuilder(future: following,
+                    builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator(); // Show a loading spinner while waiting
+                      } else if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}'); // Show error if any
+                      } else {
+                        return Text('Following: ${snapshot.data?.length}'); // Display the number of following
+                      }
+                    }),
                   ],
                 ),
               ],
