@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'dart:math';
-
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +11,7 @@ import '../providers/user_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:image/image.dart' as imageLib; // Correct import statement
+import 'package:duration_picker/duration_picker.dart';
 
 class Ingredient {
   String name;
@@ -129,7 +129,7 @@ class _AddRecipeState extends State<AddRecipe> {
                   right: 0,
                   top: 0,
                   child: IconButton(
-                    icon: Icon(Icons.close),
+                    icon: const Icon(Icons.close),
                     onPressed: () {
                       setState(() {
                         _imageFile = null; // Remove the image
@@ -144,7 +144,7 @@ class _AddRecipeState extends State<AddRecipe> {
           width: MediaQuery.of(context).size.width * 0.8,
           child: ElevatedButton(
             onPressed: _pickImage,
-            child: Text('Upload Image'),
+            child: const Text('Upload Image'),
           ),
         ),
       ],
@@ -312,7 +312,7 @@ class _AddRecipeState extends State<AddRecipe> {
                 Align(
                   alignment: Alignment.bottomRight,
                   child: IconButton(
-                    icon: Icon(Icons.close),
+                    icon: const Icon(Icons.close),
                     onPressed: () {
                       setState(() {
                         _showTags = false;
@@ -331,40 +331,74 @@ class _AddRecipeState extends State<AddRecipe> {
     required BuildContext context,
     required String label,
     required Duration time,
-    required Function(int) setTime,
+    required Function(Duration) setTime,
   }) {
     return GestureDetector(
       onTap: () {
-        showModalBottomSheet(
+        showModalBottomSheet<Duration>(
           context: context,
           builder: (BuildContext builder) {
-            return Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(20)),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.5),
-                    spreadRadius: 5,
-                    blurRadius: 7,
-                    offset: const Offset(0, 3), // changes position of shadow
+            Duration selectedTime = time; // Initial value from parent state
+
+            return StatefulBuilder(
+              builder: (BuildContext context, StateSetter setModalState) {
+                return Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius:
+                        const BorderRadius.vertical(top: Radius.circular(20)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 5,
+                        blurRadius: 7,
+                        offset:
+                            const Offset(0, 3), // changes position of shadow
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              height: MediaQuery.of(context).size.height / 3,
-              child: CupertinoPicker(
-                backgroundColor: Colors.white,
-                itemExtent: 30,
-                onSelectedItemChanged: setTime,
-                children: List<Widget>.generate(60, (int index) {
-                  return Text('$index minutes',
-                      style: const TextStyle(color: Colors.black87));
-                }),
-              ),
+                  height: MediaQuery.of(context).size.height * 0.4,
+                  child: FractionallySizedBox(
+                    widthFactor: 1.0,
+                    child: Column(
+                      children: [
+                        DurationPicker(
+                          duration: selectedTime,
+                          onChange: (newTime) {
+                            setModalState(() {
+                              selectedTime = newTime;
+                            });
+                          },
+                          snapToMins: 1.0,
+                        ),
+                        ElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(context, selectedTime);
+                            },
+                            style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all<Color>(
+                                  Theme.of(context)
+                                      .primaryColor), // Blue button  ),
+                            ),
+                            child: const Text(
+                              'Set Time',
+                              style:
+                                  TextStyle(color: Colors.white), // White text
+                            ))
+                      ],
+                    ),
+                  ),
+                );
+              },
             );
           },
-        );
+        ).then((selectedTime) {
+          if (selectedTime != null) {
+            setState(() {
+              setTime(selectedTime);
+            });
+          }
+        });
       },
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
@@ -391,6 +425,8 @@ class _AddRecipeState extends State<AddRecipe> {
                 style:
                     const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
             Text('${time.inMinutes} minutes',
+                key: ValueKey(
+                    time.inMinutes), // Use ValueKey to ensure widget rebuild
                 style: const TextStyle(fontSize: 14, color: Colors.black)),
           ],
         ),
@@ -484,7 +520,7 @@ class _AddRecipeState extends State<AddRecipe> {
               },
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           _buildImageUploadSection(),
@@ -498,15 +534,21 @@ class _AddRecipeState extends State<AddRecipe> {
                   context: context,
                   label: 'Prep Time',
                   time: prepTime,
-                  setTime: (newTime) =>
-                      setState(() => prepTime = Duration(minutes: newTime)),
+                  setTime: (newTime) {
+                    setState(() {
+                      prepTime = newTime;
+                    });
+                  },
                 ),
                 _buildTimePicker(
                   context: context,
                   label: 'Cook Time',
                   time: cookingTime,
-                  setTime: (newTime) =>
-                      setState(() => cookingTime = Duration(minutes: newTime)),
+                  setTime: (newTime) {
+                    setState(() {
+                      cookingTime = newTime;
+                    });
+                  },
                 ),
               ],
             ),
