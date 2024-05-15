@@ -12,8 +12,6 @@ class ProfilePage extends StatelessWidget {
 
     Future<List<String>> followers = userService.getFollowersList(userProvider.username);
     Future<List<String>> following = userService.getFollowingList(userProvider.username);
-    print('Followers: $followers');
-    print('Following: $following');
     var profilePictureUrl = userProvider.profilePictureUrl;
 
     return Scaffold(
