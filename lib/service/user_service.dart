@@ -26,6 +26,7 @@ class UserService {
         'email': email,
         'likes': [],
         'following': [],
+        'followers': [],
         'profilePictureUrl':
             'https://firebasestorage.googleapis.com/v0/b/recipie-app-8c9eb.appspot.com/o/profileImages%2Fprofile-default-icon.png?alt=media&token=d362d8df-0dd4-45a2-9a00-f3d812e37a76'
       });
@@ -84,15 +85,24 @@ class UserService {
     List<dynamic> following =
         (userDoc.data() as Map<String, dynamic>)['following'] ?? [];
 
+    QuerySnapshot otherUserQuery =
+        await users.where('username', isEqualTo: otherUsername).get();
+    DocumentSnapshot otherUserDoc = otherUserQuery.docs[0];
+    List<dynamic> otherFollowers =
+        (otherUserDoc.data() as Map<String, dynamic>)['followers'] ?? [];
+
     if (following.contains(otherUsername)) {
       // If already following, unfollow
       following.remove(otherUsername);
+      otherFollowers.remove(username);
     } else {
       // If not following, follow
       following.add(otherUsername);
+      otherFollowers.add(username);
     }
 
     await userDoc.reference.update({'following': following});
+    await otherUserDoc.reference.update({'followers': otherFollowers});
   }
 
   Future<List<String>> getFollowingList(String username) async {
@@ -102,6 +112,15 @@ class UserService {
     List<dynamic> following =
         (userDoc.data() as Map<String, dynamic>)['following'] ?? [];
     return following.cast<String>();
+  }
+
+  Future<List<String>> getFollowersList(String username) async {
+    QuerySnapshot userQuery =
+        await users.where('username', isEqualTo: username).get();
+    DocumentSnapshot userDoc = userQuery.docs[0];
+    List<dynamic> followers =
+        (userDoc.data() as Map<String, dynamic>)['followers'] ?? [];
+    return followers.cast<String>();
   }
 
   Future<bool> checkIsLiked(String recipeId, String username) async {

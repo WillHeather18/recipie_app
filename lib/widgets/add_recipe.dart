@@ -129,7 +129,7 @@ class _AddRecipeState extends State<AddRecipe> {
                   right: 0,
                   top: 0,
                   child: IconButton(
-                    icon: Icon(Icons.close),
+                    icon: const Icon(Icons.close),
                     onPressed: () {
                       setState(() {
                         _imageFile = null; // Remove the image
@@ -144,7 +144,7 @@ class _AddRecipeState extends State<AddRecipe> {
           width: MediaQuery.of(context).size.width * 0.8,
           child: ElevatedButton(
             onPressed: _pickImage,
-            child: Text('Upload Image'),
+            child: const Text('Upload Image'),
           ),
         ),
       ],
@@ -312,7 +312,7 @@ class _AddRecipeState extends State<AddRecipe> {
                 Align(
                   alignment: Alignment.bottomRight,
                   child: IconButton(
-                    icon: Icon(Icons.close),
+                    icon: const Icon(Icons.close),
                     onPressed: () {
                       setState(() {
                         _showTags = false;
@@ -375,15 +375,15 @@ class _AddRecipeState extends State<AddRecipe> {
                             onPressed: () {
                               Navigator.pop(context, selectedTime);
                             },
-                            child: Text(
-                              'Set Time',
-                              style:
-                                  TextStyle(color: Colors.white), // White text
-                            ),
                             style: ButtonStyle(
                               backgroundColor: MaterialStateProperty.all<Color>(
                                   Theme.of(context)
                                       .primaryColor), // Blue button  ),
+                            ),
+                            child: const Text(
+                              'Set Time',
+                              style:
+                                  TextStyle(color: Colors.white), // White text
                             ))
                       ],
                     ),
@@ -520,7 +520,7 @@ class _AddRecipeState extends State<AddRecipe> {
               },
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           _buildImageUploadSection(),
