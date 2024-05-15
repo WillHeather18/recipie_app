@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:recipie_app/widgets/feedAds.dart';
 import '../widgets/recipe_card.dart';
 import '../service/recipe_service.dart';
 import '../providers/user_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class FeedPage extends StatefulWidget {
   @override
@@ -89,11 +91,17 @@ class RecipeFeed extends StatelessWidget {
               } else if (snapshot.hasError) {
                 return const Center(child: Text("Error fetching data"));
               } else if (snapshot.hasData) {
+                List<DocumentSnapshot> docs = snapshot.data!.docs;
                 return ListView.builder(
-                  itemCount: snapshot.data!.docs.length,
+                  itemCount: docs.length +
+                      (docs.length ~/ 4), // Adjust for ad frequency
                   itemBuilder: (context, index) {
-                    Map<String, dynamic> recipeData = snapshot.data!.docs[index]
-                        .data() as Map<String, dynamic>;
+                    if (index % 4 == 0 && index != 0) {
+                      return FeedAdWidget();
+                    }
+                    int recipeIndex = index - (index ~/ 4);
+                    Map<String, dynamic> recipeData =
+                        docs[recipeIndex].data() as Map<String, dynamic>;
                     return RecipeCard(
                         recipeData: recipeData, username: username);
                   },
