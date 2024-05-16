@@ -68,48 +68,51 @@ class _RecipeCardState extends State<RecipeCard> {
                   const Expanded(
                     child: SizedBox(),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
-                    child: FutureBuilder<bool>(
-                      future: isFollowing,
-                      builder:
-                          (BuildContext context, AsyncSnapshot<bool> snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return CircularProgressIndicator(); // or some other widget while waiting
-                        } else if (snapshot.hasError) {
-                          return Text('Error: ${snapshot.error}');
-                        } else {
-                          return ElevatedButton(
-                            onPressed: () async {
-                              await userService.followUser(widget.username,
-                                  widget.recipeData['author']['username']);
-                              bool following =
-                                  await userService.checkIsFollowing(
-                                      widget.username,
-                                      widget.recipeData['author']['username']);
+                  if (widget.username !=
+                      widget.recipeData['author']['username'])
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: FutureBuilder<bool>(
+                        future: isFollowing,
+                        builder: (BuildContext context,
+                            AsyncSnapshot<bool> snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return CircularProgressIndicator(); // or some other widget while waiting
+                          } else if (snapshot.hasError) {
+                            return Text('Error: ${snapshot.error}');
+                          } else {
+                            return ElevatedButton(
+                              onPressed: () async {
+                                await userService.followUser(widget.username,
+                                    widget.recipeData['author']['username']);
+                                bool following =
+                                    await userService.checkIsFollowing(
+                                        widget.username,
+                                        widget.recipeData['author']
+                                            ['username']);
 
-                              setState(() {
-                                isFollowing = Future.value(following);
-                              });
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: snapshot.data ?? false
-                                  ? Colors.green
-                                  : Colors.blue, // background color
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(24.0),
+                                setState(() {
+                                  isFollowing = Future.value(following);
+                                });
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: snapshot.data ?? false
+                                    ? Colors.green
+                                    : Colors.blue, // background color
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(24.0),
+                                ),
                               ),
-                            ),
-                            child: Text(
-                              snapshot.data ?? false ? 'Following' : 'Follow',
-                              style: const TextStyle(color: Colors.white),
-                            ),
-                          );
-                        }
-                      },
+                              child: Text(
+                                snapshot.data ?? false ? 'Following' : 'Follow',
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                            );
+                          }
+                        },
+                      ),
                     ),
-                  ),
                 ],
               ),
             ),

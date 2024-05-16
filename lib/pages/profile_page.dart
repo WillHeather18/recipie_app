@@ -7,45 +7,84 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Accessing user data from UserProvider
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final userProvider = Provider.of<UserProvider>(context);
     final userService = UserService(userProvider: userProvider);
 
-    var profilePictureUrl;
+    Future<List<String>> followers = userService.getFollowersList(userProvider.username);
+    Future<List<String>> following = userService.getFollowingList(userProvider.username);
+    var profilePictureUrl = userProvider.profilePictureUrl;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Profile"),
+        title: Text(userProvider.email),
         backgroundColor: Colors.blue,
+        actions: <Widget>[
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red, // Set the background color to red
+            ),
+            onPressed: () async {
+              await userService.signOut();
+            },
+            child: const Text('Logout', style: TextStyle(color: Colors.white)),
+          ),
+        ],
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if (profilePictureUrl != null)
-              CircleAvatar(
-                radius: 50,
-                backgroundImage: NetworkImage(profilePictureUrl),
-              )
-            else
-              CircleAvatar(
-                radius: 50,
-                child: Icon(Icons.account_circle_outlined,
-                      size: 100, color: Colors.grey[700]),
-              ),
-            Text(userProvider.username,
-                style: const TextStyle(fontSize: 20)),
-            Text("Email: ${userProvider.email}",
-                style: const TextStyle(fontSize: 20)),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red, // Set the background color to red
-              ),
-              onPressed: () async {
-                await userService.signOut();
-              },
-              child:
-                  const Text('Logout', style: TextStyle(color: Colors.white)),
+            Stack(
+              alignment: Alignment.topCenter,
+              children: [
+                Column(
+                  children: [
+                    CircleAvatar(
+                      radius: 50,
+                      backgroundImage: profilePictureUrl.isNotEmpty
+                          ? NetworkImage(profilePictureUrl)
+                          : null,
+                      child: profilePictureUrl.isEmpty
+                          ? Icon(Icons.person, size: 50)
+                          : null,
+                    ),
+                    Text(userProvider.username, style: const TextStyle(fontSize: 20)),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 40),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                FutureBuilder<List<String>>(
+                  future: followers, // The Future you want to execute
+                  builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return CircularProgressIndicator(); // Show a loading spinner while waiting
+                    } else if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}'); // Show error if any
+                    } else {
+                      return Text('Followers: ${snapshot.data?.length}'); // Display the number of followers
+                    }
+                  },
+                ),
+                const SizedBox(width: 40),
+                Column(
+                  children: [
+                    FutureBuilder(future: following,
+                    builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator(); // Show a loading spinner while waiting
+                      } else if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}'); // Show error if any
+                      } else {
+                        return Text('Following: ${snapshot.data?.length}'); // Display the number of following
+                      }
+                    }),
+                  ],
+                ),
+              ],
             ),
           ],
         ),
