@@ -73,6 +73,17 @@ class UserService {
     return null;
   }
 
+  // Get other user details
+  Future<Map<String, dynamic>> getOtherUserDetails(String username) async {
+    QuerySnapshot userQuery =
+        await users.where('username', isEqualTo: username).get();
+    if (userQuery.docs.isNotEmpty) {
+      DocumentSnapshot userDoc = userQuery.docs[0];
+      return userDoc.data() as Map<String, dynamic>? ?? {};
+    }
+    return {};
+  }
+
   // Log out a user
   Future<void> signOut() async {
     await _auth.signOut();
@@ -121,6 +132,15 @@ class UserService {
     List<dynamic> followers =
         (userDoc.data() as Map<String, dynamic>)['followers'] ?? [];
     return followers.cast<String>();
+  }
+
+  Future<List<String>> getLikedList(String username) async {
+    QuerySnapshot userQuery =
+        await users.where('username', isEqualTo: username).get();
+    DocumentSnapshot userDoc = userQuery.docs[0];
+    List<dynamic> likes =
+        (userDoc.data() as Map<String, dynamic>)['likes'] ?? [];
+    return likes.cast<String>();
   }
 
   Future<bool> checkIsLiked(String recipeId, String username) async {

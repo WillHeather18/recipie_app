@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:recipie_app/pages/profile_page.dart';
 import 'package:recipie_app/widgets/add_recipe.dart';
 import '../pages/recipe_feed.dart';
+import 'package:recipie_app/pages/liked_page.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -15,7 +16,7 @@ class _HomeScreenState extends State<HomeScreen> {
   static final List<Widget> _widgetOptions = <Widget>[
     FeedPage(),
     const Text('Search Page', textAlign: TextAlign.center),
-    const Text('Notifications', textAlign: TextAlign.center),
+    LikesPage(),
     ProfilePage(),
   ];
 
@@ -121,7 +122,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
                 iconSize: 27.0,
                 icon: Icon(
-                  Icons.notifications,
+                  Icons.favorite_border,
                   color: _selectedIndex == 2
                       ? Colors.blue.shade900
                       : Colors.grey.shade400,
