@@ -1,12 +1,15 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import '../providers/user_provider.dart';
+import 'package:path/path.dart' as Path;
+import 'dart:io';
 
 class UserService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final CollectionReference users =
-      FirebaseFirestore.instance.collection('users');
+  FirebaseFirestore.instance.collection('users');
 
   final UserProvider userProvider;
 
@@ -28,7 +31,7 @@ class UserService {
         'following': [],
         'followers': [],
         'profilePictureUrl':
-            'https://firebasestorage.googleapis.com/v0/b/recipie-app-8c9eb.appspot.com/o/profileImages%2Fprofile-default-icon.png?alt=media&token=d362d8df-0dd4-45a2-9a00-f3d812e37a76'
+        'https://firebasestorage.googleapis.com/v0/b/recipie-app-8c9eb.appspot.com/o/profileImages%2Fprofile-default-icon.png?alt=media&token=d362d8df-0dd4-45a2-9a00-f3d812e37a76'
       });
       return result;
     } on FirebaseAuthException catch (e) {
@@ -80,13 +83,13 @@ class UserService {
 
   Future<void> followUser(String username, String otherUsername) async {
     QuerySnapshot userQuery =
-        await users.where('username', isEqualTo: username).get();
+    await users.where('username', isEqualTo: username).get();
     DocumentSnapshot userDoc = userQuery.docs[0];
     List<dynamic> following =
         (userDoc.data() as Map<String, dynamic>)['following'] ?? [];
 
     QuerySnapshot otherUserQuery =
-        await users.where('username', isEqualTo: otherUsername).get();
+    await users.where('username', isEqualTo: otherUsername).get();
     DocumentSnapshot otherUserDoc = otherUserQuery.docs[0];
     List<dynamic> otherFollowers =
         (otherUserDoc.data() as Map<String, dynamic>)['followers'] ?? [];
@@ -107,7 +110,7 @@ class UserService {
 
   Future<List<String>> getFollowingList(String username) async {
     QuerySnapshot userQuery =
-        await users.where('username', isEqualTo: username).get();
+    await users.where('username', isEqualTo: username).get();
     DocumentSnapshot userDoc = userQuery.docs[0];
     List<dynamic> following =
         (userDoc.data() as Map<String, dynamic>)['following'] ?? [];
@@ -116,7 +119,7 @@ class UserService {
 
   Future<List<String>> getFollowersList(String username) async {
     QuerySnapshot userQuery =
-        await users.where('username', isEqualTo: username).get();
+    await users.where('username', isEqualTo: username).get();
     DocumentSnapshot userDoc = userQuery.docs[0];
     List<dynamic> followers =
         (userDoc.data() as Map<String, dynamic>)['followers'] ?? [];
@@ -125,7 +128,7 @@ class UserService {
 
   Future<bool> checkIsLiked(String recipeId, String username) async {
     QuerySnapshot userQuery =
-        await users.where('username', isEqualTo: username).get();
+    await users.where('username', isEqualTo: username).get();
     var likes =
         (userQuery.docs[0].data() as Map<String, dynamic>)['likes'] ?? [];
     return likes.contains(recipeId);
@@ -133,11 +136,42 @@ class UserService {
 
   Future<bool> checkIsFollowing(String username, String otherUsername) async {
     QuerySnapshot userQuery =
-        await users.where('username', isEqualTo: username).get();
+    await users.where('username', isEqualTo: username).get();
     var following =
         (userQuery.docs[0].data() as Map<String, dynamic>)['following'] ?? [];
     bool isFollowing = following.contains(otherUsername);
     print('$username is ${isFollowing ? "" : "not "}following $otherUsername');
     return isFollowing;
+  }
+
+  Future<void> uploadProfilePicture(String filePath) async {
+    File file = File(filePath);
+    try {
+      // Create metadata
+      SettableMetadata metadata = SettableMetadata(
+        // Set cache control to public for maximum duration of 1 year
+        cacheControl: 'public,max-age=31536000',
+      );
+
+      // Upload the image to Firebase Storage
+      UploadTask task = FirebaseStorage.instance
+          .ref('profileImages/${Path.basename(filePath)}')
+          .putFile(file, metadata); // Set metadata here
+
+      // Get the download URL of the image
+      final TaskSnapshot snapshot = await task;
+      final String downloadUrl = await snapshot.ref.getDownloadURL();
+
+      // Update the user's profile picture URL in Firestore
+      await users.doc(_auth.currentUser!.uid).update({
+        'profilePictureUrl': downloadUrl,
+      });
+
+      // Update the profile picture URL in the UserProvider
+      userProvider.setProfilePictureUrl(downloadUrl);
+    } catch (e) {
+      print('Failed to upload image: $e');
+      throw e;
+    }
   }
 }
