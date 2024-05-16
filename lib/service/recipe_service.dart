@@ -34,8 +34,15 @@ class RecipeService {
           .where('author.username', whereIn: followingList)
           .snapshots();
     } else {
-      return recipes.snapshots();
+      return recipes.orderBy('datePosted', descending: true).snapshots();
     }
+  }
+
+  // Get liked recipes
+  Stream<QuerySnapshot> getLikedRecipes(String username) async* {
+    List<String> likedList =
+        await UserService(userProvider: UserProvider()).getLikedList(username);
+    yield* recipes.where('recipeId', whereIn: likedList).snapshots();
   }
 
   // Update an existing recipe

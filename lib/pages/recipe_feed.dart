@@ -94,12 +94,15 @@ class RecipeFeed extends StatelessWidget {
                 List<DocumentSnapshot> docs = snapshot.data!.docs;
                 return ListView.builder(
                   itemCount: docs.length +
-                      (docs.length ~/ 4), // Adjust for ad frequency
+                      (docs.length ~/ 3), // Adjust for ad frequency
                   itemBuilder: (context, index) {
-                    if (index % 4 == 0 && index != 0) {
+                    if ((index + 1) % 4 == 0 && index != 0) {
+                      // Change modulus to 4 for ad after every 3 posts
                       return FeedAdWidget();
                     }
-                    int recipeIndex = index - (index ~/ 4);
+                    int recipeIndex = index -
+                        (index ~/
+                            4); // Change divisor to 4 for ad after every 3 posts
                     Map<String, dynamic> recipeData =
                         docs[recipeIndex].data() as Map<String, dynamic>;
                     return RecipeCard(
