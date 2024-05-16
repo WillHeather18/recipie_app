@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:recipie_app/pages/profile_page.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import '../pages/recipe_page.dart';
 import '../service/recipe_service.dart';
@@ -55,29 +56,48 @@ class _RecipeCardState extends State<RecipeCard> {
               ),
               child: Row(
                 children: [
-                  FutureBuilder<Map<String, dynamic>>(
-                    future: userService.getOtherUserDetails(
-                        widget.recipeData['author']['username']),
-                    builder: (BuildContext context,
-                        AsyncSnapshot<Map<String, dynamic>> snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return CircularProgressIndicator(); // or some other widget while waiting
-                      } else if (snapshot.hasError) {
-                        return Text('Error: ${snapshot.error}');
-                      } else {
-                        final authorDetails = snapshot.data;
-                        return CircleAvatar(
-                          backgroundImage:
-                              NetworkImage(authorDetails?['profilePictureUrl']),
-                        );
-                      }
-                    },
-                  ),
                   Padding(
                     padding: const EdgeInsets.only(left: 8.0),
-                    child: Text(widget.recipeData['author']['username'],
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 24)),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ProfilePage(
+                                  username: widget.recipeData['author']
+                                      ['username'])),
+                        );
+                      },
+                      child: Row(
+                        children: [
+                          FutureBuilder<Map<String, dynamic>>(
+                            future: userService.getOtherUserDetails(
+                                widget.recipeData['author']['username']),
+                            builder: (BuildContext context,
+                                AsyncSnapshot<Map<String, dynamic>> snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return CircularProgressIndicator(); // or some other widget while waiting
+                              } else if (snapshot.hasError) {
+                                return Text('Error: ${snapshot.error}');
+                              } else {
+                                final authorDetails = snapshot.data;
+                                return CircleAvatar(
+                                  backgroundImage: NetworkImage(
+                                      authorDetails?['profilePictureUrl']),
+                                );
+                              }
+                            },
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: Text(widget.recipeData['author']['username'],
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 24)),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                   const Expanded(
                     child: SizedBox(),

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
+import 'package:provider/provider.dart';
 import 'package:recipie_app/pages/profile_page.dart';
 import 'package:recipie_app/pages/search_page.dart';
 import 'package:recipie_app/widgets/add_recipe.dart';
 import '../pages/recipe_feed.dart';
 import 'package:recipie_app/pages/liked_page.dart';
+import 'package:recipie_app/providers/user_provider.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -13,13 +16,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
   bool _clickedCentreFAB = false;
-
-  static final List<Widget> _widgetOptions = <Widget>[
-    FeedPage(),
-    SearchPage(),
-    LikesPage(),
-    ProfilePage(),
-  ];
 
   void _onItemTapped(int index) {
     if (mounted) {
@@ -40,6 +36,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var userProvider = Provider.of<UserProvider>(context, listen: false);
+
+    final List<Widget> _widgetOptions = <Widget>[
+      FeedPage(),
+      SearchPage(),
+      LikesPage(),
+      ProfilePage(username: userProvider.username),
+    ];
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Stack(
