@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:recipie_app/pages/recipe_page.dart';
+import 'package:recipie_app/widgets/search_card.dart';
 import '../providers/user_provider.dart';
 import '../service/recipe_service.dart';
 import '../service/user_service.dart';
@@ -99,24 +100,30 @@ class _LikesPageState extends State<LikesPage> {
                         return const Center(child: Text('No results found.'));
                       }
 
-                      return GridView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          childAspectRatio: 3 / 4,
-                          mainAxisSpacing: 10,
-                          crossAxisSpacing: 10,
-                        ),
-                        itemCount: filteredRecipes.length,
-                        itemBuilder: (context, index) {
-                          final recipe = filteredRecipes[index];
-                          final recipeData =
-                              recipe.data() as Map<String, dynamic>;
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: GridView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            childAspectRatio: 1,
+                            mainAxisSpacing: 10,
+                            crossAxisSpacing: 10,
+                          ),
+                          itemCount: filteredRecipes.length,
+                          itemBuilder: (context, index) {
+                            final recipe = filteredRecipes[index];
+                            final recipeData =
+                                recipe.data() as Map<String, dynamic>;
 
-                          return RecipeSavedCard(recipeData: recipeData);
-                        },
+                            return SearchCard(
+                              recipeData: recipeData,
+                              heroTag: recipeData['imageURL'],
+                            );
+                          },
+                        ),
                       );
                     },
                   );
@@ -126,99 +133,6 @@ class _LikesPageState extends State<LikesPage> {
           ],
         ),
       ),
-    );
-  }
-}
-
-class RecipeSavedCard extends StatelessWidget {
-  final Map<String, dynamic> recipeData;
-
-  const RecipeSavedCard({required this.recipeData});
-
-  @override
-  Widget build(BuildContext context) {
-    UserProvider userProvider = Provider.of<UserProvider>(context);
-    UserService userService = UserService(userProvider: userProvider);
-
-    return FutureBuilder<Map<String, dynamic>>(
-      future: userService.getOtherUserDetails(recipeData['author']['username']),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        if (snapshot.hasError || !snapshot.hasData) {
-          return const Center(child: Text('Error retrieving author details.'));
-        }
-
-        final authorDetails = snapshot.data;
-
-        return GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) =>
-                      RecipeDetailsPage(recipeData: recipeData)),
-            );
-          },
-          child: Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: ClipRRect(
-                    borderRadius:
-                        const BorderRadius.vertical(top: Radius.circular(10.0)),
-                    child: Hero(
-                      tag: recipeData['imageURL'],
-                      child: Image.network(
-                        recipeData['imageURL'],
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    recipeData['title'],
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 10,
-                        backgroundImage:
-                            NetworkImage(authorDetails?['profilePictureUrl']),
-                      ),
-                      const SizedBox(width: 5),
-                      Expanded(
-                        child: Text(
-                          recipeData['author']['username'],
-                          style: const TextStyle(
-                            color: Colors.grey,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 5),
-              ],
-            ),
-          ),
-        );
-      },
     );
   }
 }
