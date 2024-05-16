@@ -38,6 +38,17 @@ class RecipeService {
     }
   }
 
+  Stream<QuerySnapshot> getTopLikedRecipes() {
+    DateTime now = DateTime.now();
+    DateTime oneWeekAgo = now.subtract(const Duration(days: 7));
+
+    return recipes
+        .where('datePosted', isGreaterThan: Timestamp.fromDate(oneWeekAgo))
+        .orderBy('interactions.likes', descending: true)
+        .limit(5)
+        .snapshots();
+  }
+
   // Get liked recipes
   Stream<QuerySnapshot> getLikedRecipes(String username) async* {
     List<String> likedList =

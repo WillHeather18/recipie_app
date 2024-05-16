@@ -687,11 +687,12 @@ class _AddRecipeState extends State<AddRecipe> {
       "instructions": instructions,
       "tags": selectedCategories,
       "prepTime": prepTime.toString(),
+      "cookingTime": cookingTime.toString(),
       "author": {
         "email": userProvider.email,
         "username": userProvider.username
       },
-      "datePosted": DateTime.now().toIso8601String(),
+      "datePosted": Timestamp.fromDate(DateTime.now()),
       "interactions": {"likes": 0, "comments": [], "shares": 0},
     };
 

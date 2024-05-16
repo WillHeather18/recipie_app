@@ -21,8 +21,11 @@ class RecipeDetailsPage extends StatelessWidget {
                     width: MediaQuery.of(context).size.width * 0.5,
                     child: Hero(
                       tag: recipeData['imageURL'],
-                      child: Image.network(recipeData['imageURL'],
-                          fit: BoxFit.cover),
+                      child: AspectRatio(
+                        aspectRatio: 1,
+                        child: Image.network(recipeData['imageURL'],
+                            fit: BoxFit.cover),
+                      ),
                     ),
                   ),
                   Container(
@@ -39,7 +42,7 @@ class RecipeDetailsPage extends StatelessWidget {
                           style: const TextStyle(color: Colors.grey),
                         ),
                         Text(
-                          'Posted ${timeago.format(DateTime.parse(recipeData['datePosted']))}',
+                          'Posted ${timeago.format(recipeData['datePosted'].toDate())}',
                           style: const TextStyle(color: Colors.grey),
                         ),
                       ],
@@ -96,7 +99,7 @@ class RecipeDetailsPage extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                'Posted by ${recipeData['author']['username']} on ${timeago.format(DateTime.parse(recipeData['datePosted']))}',
+                'Posted by ${recipeData['author']['username']} on ${timeago.format(recipeData['datePosted'].toDate())}',
                 style: const TextStyle(color: Colors.grey),
               ),
             ),
