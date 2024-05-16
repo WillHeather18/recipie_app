@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:recipie_app/pages/profile_page.dart';
+import 'package:recipie_app/pages/search_page.dart';
 import 'package:recipie_app/widgets/add_recipe.dart';
 import '../pages/recipe_feed.dart';
 import 'package:recipie_app/pages/liked_page.dart';
@@ -15,7 +16,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   static final List<Widget> _widgetOptions = <Widget>[
     FeedPage(),
-    const Text('Search Page', textAlign: TextAlign.center),
+    SearchPage(),
     LikesPage(),
     ProfilePage(),
   ];

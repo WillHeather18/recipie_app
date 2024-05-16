@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
+import 'package:recipie_app/pages/recipe_page.dart';
 import '../providers/user_provider.dart';
 import '../service/recipe_service.dart';
 import '../service/user_service.dart';
@@ -151,57 +152,70 @@ class RecipeSavedCard extends StatelessWidget {
 
         final authorDetails = snapshot.data;
 
-        return Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: ClipRRect(
-                  borderRadius:
-                      const BorderRadius.vertical(top: Radius.circular(10.0)),
-                  child: Image.network(
-                    recipeData['imageURL'],
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  recipeData['title'],
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 10,
-                      backgroundImage:
-                          NetworkImage(authorDetails?['profilePictureUrl']),
-                    ),
-                    const SizedBox(width: 5),
-                    Expanded(
-                      child: Text(
-                        recipeData['author']['username'],
-                        style: const TextStyle(
-                          color: Colors.grey,
-                        ),
-                        overflow: TextOverflow.ellipsis,
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      RecipeDetailsPage(recipeData: recipeData)),
+            );
+          },
+          child: Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: ClipRRect(
+                    borderRadius:
+                        const BorderRadius.vertical(top: Radius.circular(10.0)),
+                    child: Hero(
+                      tag: recipeData['imageURL'],
+                      child: Image.network(
+                        recipeData['imageURL'],
+                        width: double.infinity,
+                        fit: BoxFit.cover,
                       ),
                     ),
-                  ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: 5),
-            ],
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    recipeData['title'],
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 10,
+                        backgroundImage:
+                            NetworkImage(authorDetails?['profilePictureUrl']),
+                      ),
+                      const SizedBox(width: 5),
+                      Expanded(
+                        child: Text(
+                          recipeData['author']['username'],
+                          style: const TextStyle(
+                            color: Colors.grey,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 5),
+              ],
+            ),
           ),
         );
       },

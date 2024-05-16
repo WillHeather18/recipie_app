@@ -55,9 +55,23 @@ class _RecipeCardState extends State<RecipeCard> {
               ),
               child: Row(
                 children: [
-                  CircleAvatar(
-                    backgroundImage:
-                        NetworkImage(userProvider.profilePictureUrl),
+                  FutureBuilder<Map<String, dynamic>>(
+                    future: userService.getOtherUserDetails(
+                        widget.recipeData['author']['username']),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<Map<String, dynamic>> snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator(); // or some other widget while waiting
+                      } else if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      } else {
+                        final authorDetails = snapshot.data;
+                        return CircleAvatar(
+                          backgroundImage:
+                              NetworkImage(authorDetails?['profilePictureUrl']),
+                        );
+                      }
+                    },
                   ),
                   Padding(
                     padding: const EdgeInsets.only(left: 8.0),
@@ -284,8 +298,7 @@ class _RecipeCardState extends State<RecipeCard> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                  timeago
-                      .format(DateTime.parse(widget.recipeData['datePosted'])),
+                  timeago.format(widget.recipeData['datePosted'].toDate()),
                   style: const TextStyle(color: Colors.grey)),
             ),
           ],

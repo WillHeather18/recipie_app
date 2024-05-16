@@ -11,8 +11,10 @@ class ProfilePage extends StatelessWidget {
     final userProvider = Provider.of<UserProvider>(context);
     final userService = UserService(userProvider: userProvider);
 
-    Future<List<String>> followers = userService.getFollowersList(userProvider.username);
-    Future<List<String>> following = userService.getFollowingList(userProvider.username);
+    Future<List<String>> followers =
+        userService.getFollowersList(userProvider.username);
+    Future<List<String>> following =
+        userService.getFollowingList(userProvider.username);
     var profilePictureUrl = userProvider.profilePictureUrl;
 
     return Scaffold(
@@ -42,9 +44,11 @@ class ProfilePage extends StatelessWidget {
                   children: [
                     InkWell(
                       onTap: () async {
-                        final pickedFile = await ImagePicker().getImage(source: ImageSource.gallery);
+                        final pickedFile = await ImagePicker()
+                            .getImage(source: ImageSource.gallery);
                         if (pickedFile != null) {
-                          await userService.uploadProfilePicture(pickedFile.path);
+                          await userService
+                              .uploadProfilePicture(pickedFile.path);
                         }
                       },
                       child: CircleAvatar(
@@ -57,7 +61,8 @@ class ProfilePage extends StatelessWidget {
                             : null,
                       ),
                     ),
-                    Text(userProvider.username, style: const TextStyle(fontSize: 20)),
+                    Text(userProvider.username,
+                        style: const TextStyle(fontSize: 20)),
                   ],
                 ),
               ],
@@ -68,29 +73,37 @@ class ProfilePage extends StatelessWidget {
               children: [
                 FutureBuilder<List<String>>(
                   future: followers, // The Future you want to execute
-                  builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
+                  builder: (BuildContext context,
+                      AsyncSnapshot<List<String>> snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const CircularProgressIndicator(); // Show a loading spinner while waiting
                     } else if (snapshot.hasError) {
-                      return Text('Error: ${snapshot.error}'); // Show error if any
+                      return Text(
+                          'Error: ${snapshot.error}'); // Show error if any
                     } else {
-                      return Text('Followers: ${snapshot.data?.length}'); // Display the number of followers
+                      return Text(
+                          'Followers: ${snapshot.data?.length}'); // Display the number of followers
                     }
                   },
                 ),
                 const SizedBox(width: 40),
                 Column(
                   children: [
-                    FutureBuilder(future: following,
-                    builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const CircularProgressIndicator(); // Show a loading spinner while waiting
-                      } else if (snapshot.hasError) {
-                        return Text('Error: ${snapshot.error}'); // Show error if any
-                      } else {
-                        return Text('Following: ${snapshot.data?.length}'); // Display the number of following
-                      }
-                    }),
+                    FutureBuilder(
+                        future: following,
+                        builder: (BuildContext context,
+                            AsyncSnapshot<List<String>> snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const CircularProgressIndicator(); // Show a loading spinner while waiting
+                          } else if (snapshot.hasError) {
+                            return Text(
+                                'Error: ${snapshot.error}'); // Show error if any
+                          } else {
+                            return Text(
+                                'Following: ${snapshot.data?.length}'); // Display the number of following
+                          }
+                        }),
                   ],
                 ),
               ],
