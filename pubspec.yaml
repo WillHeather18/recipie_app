@@ -49,6 +49,7 @@ dependencies:
   flutter_image_compress: ^2.2.0
   image: ^4.1.7
   timeago: ^3.6.1
+  path: ^1.8.2
 
 dev_dependencies:
   flutter_test:

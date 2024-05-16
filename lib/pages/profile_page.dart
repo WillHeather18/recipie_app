@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:image_picker/image_picker.dart';
 import '../providers/user_provider.dart';
 import '../service/user_service.dart';
 
@@ -39,14 +40,22 @@ class ProfilePage extends StatelessWidget {
               children: [
                 Column(
                   children: [
-                    CircleAvatar(
-                      radius: 50,
-                      backgroundImage: profilePictureUrl.isNotEmpty
-                          ? NetworkImage(profilePictureUrl)
-                          : null,
-                      child: profilePictureUrl.isEmpty
-                          ? Icon(Icons.person, size: 50)
-                          : null,
+                    InkWell(
+                      onTap: () async {
+                        final pickedFile = await ImagePicker().getImage(source: ImageSource.gallery);
+                        if (pickedFile != null) {
+                          await userService.uploadProfilePicture(pickedFile.path);
+                        }
+                      },
+                      child: CircleAvatar(
+                        radius: 50,
+                        backgroundImage: profilePictureUrl.isNotEmpty
+                            ? NetworkImage(profilePictureUrl)
+                            : null,
+                        child: profilePictureUrl.isEmpty
+                            ? const Icon(Icons.person, size: 50)
+                            : null,
+                      ),
                     ),
                     Text(userProvider.username, style: const TextStyle(fontSize: 20)),
                   ],
@@ -61,7 +70,7 @@ class ProfilePage extends StatelessWidget {
                   future: followers, // The Future you want to execute
                   builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return CircularProgressIndicator(); // Show a loading spinner while waiting
+                      return const CircularProgressIndicator(); // Show a loading spinner while waiting
                     } else if (snapshot.hasError) {
                       return Text('Error: ${snapshot.error}'); // Show error if any
                     } else {
@@ -75,7 +84,7 @@ class ProfilePage extends StatelessWidget {
                     FutureBuilder(future: following,
                     builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return CircularProgressIndicator(); // Show a loading spinner while waiting
+                        return const CircularProgressIndicator(); // Show a loading spinner while waiting
                       } else if (snapshot.hasError) {
                         return Text('Error: ${snapshot.error}'); // Show error if any
                       } else {

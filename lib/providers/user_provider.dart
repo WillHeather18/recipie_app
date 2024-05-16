@@ -18,6 +18,11 @@ class UserProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void setProfilePictureUrl(String url) {
+    _profilePictureUrl = url;
+    notifyListeners();
+  }
+
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   void loadUserDetails() async {
