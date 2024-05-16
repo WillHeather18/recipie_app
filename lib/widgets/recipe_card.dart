@@ -135,8 +135,10 @@ class _RecipeCardState extends State<RecipeCard> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) =>
-                            RecipeDetailsPage(recipeData: widget.recipeData)),
+                        builder: (context) => RecipeDetailsPage(
+                              recipeData: widget.recipeData,
+                              heroTag: widget.recipeData['imageURL'],
+                            )),
                   );
                 },
                 child: Container(

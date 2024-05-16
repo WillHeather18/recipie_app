@@ -681,6 +681,7 @@ class _AddRecipeState extends State<AddRecipe> {
     final document = {
       "recipeId": randomId,
       "title": title,
+      "lowercaseTitle": title.toLowerCase(),
       "imageURL": imageUrl,
       "description": description,
       "ingredients": docIngredients,

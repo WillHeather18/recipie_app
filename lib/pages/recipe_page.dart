@@ -3,8 +3,9 @@ import 'package:timeago/timeago.dart' as timeago;
 
 class RecipeDetailsPage extends StatelessWidget {
   final Map<String, dynamic> recipeData;
+  final String heroTag;
 
-  RecipeDetailsPage({required this.recipeData});
+  RecipeDetailsPage({required this.recipeData, required this.heroTag});
 
   @override
   Widget build(BuildContext context) {
@@ -17,10 +18,10 @@ class RecipeDetailsPage extends StatelessWidget {
             Container(
               child: Row(
                 children: [
-                  Container(
+                  SizedBox(
                     width: MediaQuery.of(context).size.width * 0.5,
                     child: Hero(
-                      tag: recipeData['imageURL'],
+                      tag: heroTag,
                       child: AspectRatio(
                         aspectRatio: 1,
                         child: Image.network(recipeData['imageURL'],
@@ -28,7 +29,7 @@ class RecipeDetailsPage extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Container(
+                  SizedBox(
                     width: MediaQuery.of(context).size.width * 0.5,
                     child: Column(
                       children: [

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:recipie_app/service/user_service.dart';
 import '../providers/user_provider.dart';
@@ -38,6 +40,22 @@ class RecipeService {
     }
   }
 
+  Stream<QuerySnapshot> searchRecipes(String searchString) {
+    print('searchRecipes called with searchString: $searchString');
+
+    // Convert the search string to lowercase to make the search case-insensitive
+    String lowerCaseSearchString = searchString.toLowerCase();
+
+    // Get all recipes that start with the search string
+    Stream<QuerySnapshot> query = recipes
+        .orderBy('lowercaseTitle')
+        .where('lowercaseTitle', isGreaterThanOrEqualTo: lowerCaseSearchString)
+        .where('lowercaseTitle', isLessThan: lowerCaseSearchString + 'z')
+        .snapshots();
+
+    return query;
+  }
+
   Stream<QuerySnapshot> getTopLikedRecipes() {
     DateTime now = DateTime.now();
     DateTime oneWeekAgo = now.subtract(const Duration(days: 7));
@@ -47,6 +65,35 @@ class RecipeService {
         .orderBy('interactions.likes', descending: true)
         .limit(5)
         .snapshots();
+  }
+
+  // Get suggested recipes
+  Future<List<Map<String, dynamic>>> getSuggestedRecipes() async {
+    List<Map<String, dynamic>> suggestedRecipes = [];
+
+    // Get all recipes
+    QuerySnapshot snapshot = await recipes.get();
+
+    // Check if there are enough recipes to suggest
+    if (snapshot.docs.length >= 4) {
+      // Generate 4 random indices
+      List<int> randomIndices = [];
+      while (randomIndices.length < 4) {
+        int randomIndex = Random().nextInt(snapshot.docs.length);
+        if (!randomIndices.contains(randomIndex)) {
+          randomIndices.add(randomIndex);
+        }
+      }
+
+      // Get the random recipes
+      for (int index in randomIndices) {
+        DocumentSnapshot doc = snapshot.docs[index];
+        Map<String, dynamic> recipe = doc.data() as Map<String, dynamic>;
+        suggestedRecipes.add(recipe);
+      }
+    }
+
+    return suggestedRecipes;
   }
 
   // Get liked recipes
