@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
-import 'package:recipie_app/pages/recipe_page.dart';
 import 'package:recipie_app/widgets/search_card.dart';
 import '../providers/user_provider.dart';
 import '../service/recipe_service.dart';
@@ -51,14 +50,12 @@ class _SearchPageState extends State<SearchPage> {
                 child: searchQuery.isEmpty
                     ? SingleChildScrollView(
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(
-                              alignment: Alignment.centerLeft,
-                              child: const Text(
-                                'This Week\'s Top Recipes',
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.bold),
-                              ),
+                            const Text(
+                              'This Week\'s Top Recipes',
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 10),
                             StreamBuilder<QuerySnapshot>(
@@ -102,15 +99,13 @@ class _SearchPageState extends State<SearchPage> {
                                 );
                               },
                             ),
-                            const SizedBox(height: 5),
-                            Container(
-                              alignment: Alignment.centerLeft,
-                              child: const Text(
-                                'Suggested Recipes',
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.bold),
-                              ),
+                            const SizedBox(height: 20),
+                            const Text(
+                              'Suggested Recipes',
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
                             ),
+                            const SizedBox(height: 10),
                             FutureBuilder<List<Map<String, dynamic>>>(
                               future: recipeService.getSuggestedRecipes(),
                               builder: (context, snapshot) {
@@ -123,35 +118,38 @@ class _SearchPageState extends State<SearchPage> {
                                 } else {
                                   final suggestedRecipes = snapshot.data;
 
-                                  return Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 5, right: 5),
-                                    child: SizedBox(
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              0.5,
-                                      child: GridView.builder(
-                                        gridDelegate:
-                                            const SliverGridDelegateWithFixedCrossAxisCount(
-                                          crossAxisCount:
-                                              2, // Creates a 2x2 grid
-                                          mainAxisSpacing: 10,
-                                          crossAxisSpacing: 10,
-                                          childAspectRatio: 1,
-                                        ),
-                                        itemCount: suggestedRecipes?.length,
-                                        itemBuilder: (context, index) {
-                                          final recipeData =
-                                              suggestedRecipes?[index];
-
-                                          return SearchCard(
-                                            recipeData: recipeData!,
-                                            heroTag:
-                                                "suggested ${recipeData['imageURL']}",
-                                          );
-                                        },
-                                      ),
+                                  return GridView.builder(
+                                    shrinkWrap: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    gridDelegate:
+                                        const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 2,
+                                      mainAxisSpacing: 10,
+                                      crossAxisSpacing: 10,
+                                      childAspectRatio: 1,
                                     ),
+                                    itemCount: suggestedRecipes?.length,
+                                    itemBuilder: (context, index) {
+                                      final recipeData =
+                                          suggestedRecipes?[index];
+
+                                      return Container(
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                            color: Colors.grey,
+                                            width: 1,
+                                          ),
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                        child: SearchCard(
+                                          recipeData: recipeData!,
+                                          heroTag:
+                                              "suggested ${recipeData['imageURL']}",
+                                        ),
+                                      );
+                                    },
                                   );
                                 }
                               },
