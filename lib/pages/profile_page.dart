@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:recipie_app/widgets/search_card.dart';
 import '../providers/user_provider.dart';
 import '../service/recipe_service.dart';
 import '../service/user_service.dart';
@@ -10,7 +11,6 @@ import 'liked_page.dart';
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
   @override
-
   Widget build(BuildContext context) {
     // Accessing user data from UserProvider
     final userProvider = Provider.of<UserProvider>(context);
@@ -18,9 +18,9 @@ class ProfilePage extends StatelessWidget {
     final recipeService = RecipeService();
 
     Future<List<String>> followers =
-    userService.getFollowersList(userProvider.username);
+        userService.getFollowersList(userProvider.username);
     Future<List<String>> following =
-    userService.getFollowingList(userProvider.username);
+        userService.getFollowingList(userProvider.username);
     var profilePictureUrl = userProvider.profilePictureUrl;
 
     return Scaffold(
@@ -123,6 +123,7 @@ class ProfilePage extends StatelessWidget {
                 'My Recipes',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
+              SizedBox(height: 15),
               FutureBuilder<Stream<QuerySnapshot>>(
                 future: recipeService.getUserRecipes(userProvider.username),
                 builder: (context, snapshot) {
@@ -150,9 +151,9 @@ class ProfilePage extends StatelessWidget {
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
+                            const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
-                          childAspectRatio: 3 / 4,
+                          childAspectRatio: 1,
                           mainAxisSpacing: 10,
                           crossAxisSpacing: 10,
                         ),
@@ -160,9 +161,12 @@ class ProfilePage extends StatelessWidget {
                         itemBuilder: (context, index) {
                           final recipe = recipes![index];
                           final recipeData =
-                          recipe.data() as Map<String, dynamic>;
+                              recipe.data() as Map<String, dynamic>;
 
-                          return RecipeSavedCard(recipeData: recipeData);
+                          return SearchCard(
+                            recipeData: recipeData,
+                            heroTag: recipeData['imageURL'],
+                          );
                         },
                       );
                     },
