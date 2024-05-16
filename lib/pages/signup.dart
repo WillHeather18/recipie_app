@@ -25,6 +25,8 @@ class _SignupScreenState extends State<SignupScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                Image.asset('assets/logo.png'), // Add this line
+
                 TextField(
                   controller: _emailController,
                   decoration: const InputDecoration(labelText: 'Email'),
