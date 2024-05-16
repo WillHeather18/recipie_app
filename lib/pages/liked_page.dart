@@ -53,7 +53,7 @@ class _LikesPageState extends State<LikesPage> {
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 8.0),
               child: Text(
-                'Recipes',
+                'Liked Recipes',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
             ),

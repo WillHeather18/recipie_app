@@ -614,7 +614,7 @@ class _AddRecipeState extends State<AddRecipe> {
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.only(top: 30, bottom: 30.0),
+          padding: const EdgeInsets.only(top: 75, bottom: 30.0),
           child: Column(
             children: [
               Row(
@@ -688,7 +688,8 @@ class _AddRecipeState extends State<AddRecipe> {
       "instructions": instructions,
       "tags": selectedCategories,
       "prepTime": prepTime.toString(),
-      "cookingTime": cookingTime.toString(),
+      "cookTime": cookingTime.toString(),
+      "servings": servings,
       "author": {
         "email": userProvider.email,
         "username": userProvider.username
