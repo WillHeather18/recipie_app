@@ -37,6 +37,12 @@ class RecipeService {
       return recipes.orderBy('datePosted', descending: true).snapshots();
     }
   }
+  Future<Stream<QuerySnapshot>> getUserRecipes(String username) async {
+    return FirebaseFirestore.instance
+        .collection('recipes')
+        .where('author.username', isEqualTo: username)
+        .snapshots();
+  }
 
   Stream<QuerySnapshot> getTopLikedRecipes() {
     DateTime now = DateTime.now();
